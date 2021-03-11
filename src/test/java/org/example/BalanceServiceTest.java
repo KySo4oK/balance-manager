@@ -18,9 +18,28 @@ public class BalanceServiceTest {
     public void testGetNegativeDaysInMonths() {
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(new Transaction(-102, LocalDate.now()));
-        transactions.add(new Transaction(-102, LocalDate.now()));
         Account account = new Account(100, transactions);
         Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
-        Assert.assertTrue(negativeDaysInMonths.containsValue(-104));
+        Assert.assertTrue(negativeDaysInMonths.containsValue(1));
+    }
+
+    @Test
+    public void shouldReturnTwoWhenSecondDayIsPrevious() {
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(new Transaction(-102, LocalDate.now()));
+        transactions.add(new Transaction(-102, LocalDate.now().minusDays(1)));
+        Account account = new Account(100, transactions);
+        Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
+        Assert.assertTrue(negativeDaysInMonths.containsValue(2));
+    }
+
+    @Test
+    public void shouldNotAddAmountsWhenMonthsNotEquals() {
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(new Transaction(-102, LocalDate.now()));
+        transactions.add(new Transaction(102, LocalDate.now().minusMonths(1)));
+        Account account = new Account(100, transactions);
+        Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
+        Assert.assertTrue(negativeDaysInMonths.containsValue(1));
     }
 }
