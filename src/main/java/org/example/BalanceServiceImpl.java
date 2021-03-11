@@ -20,12 +20,20 @@ public class BalanceServiceImpl implements BalanceService {
                 .collect(Collectors.groupingBy(transaction -> transaction.getDate().getMonth()));
         Map<Month, Integer> result = new HashMap<>();
         for (Month month : monthListMap.keySet().stream().sorted().collect(Collectors.toList())) {
-            int amountSum = monthListMap.get(month).stream()
-                    .map(Transaction::getAmount)
-                    .mapToInt(Integer::intValue)
-                    .sum();
-            balance += amountSum;
-            result.put(month, balance);
+            List<Transaction> transactionsForMonth = monthListMap.get(month);
+            Map<Integer, List<Transaction>> collect = transactionsForMonth.stream().collect(Collectors.groupingBy(transaction -> transaction.getDate().getDayOfMonth()));
+            int negativeDays = 0;
+            for (Integer dayOfMonth : collect.keySet()) {
+                int amountSum = collect.get(dayOfMonth).stream()
+                        .map(Transaction::getAmount)
+                        .mapToInt(Integer::intValue)
+                        .sum();
+                balance += amountSum;
+                if (balance < 0) {
+                    negativeDays++;
+                }
+            }
+            result.put(month, negativeDays);
         }
         return result;
     }
