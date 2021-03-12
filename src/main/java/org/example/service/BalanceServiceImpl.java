@@ -15,14 +15,16 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     public Map<MonthEntry, Integer> getNegativeDaysInMonths(Account account) {
         int balance = account.getStartBalance();
-        Map<MonthEntry, List<Transaction>> monthListMap = getMonthEntryMap(account);
+        Map<MonthEntry, List<Transaction>> monthEntryTransactionsMap = getMonthEntryMap(account);
         Map<MonthEntry, Integer> result = new HashMap<>();
-        for (MonthEntry month : monthListMap.keySet().stream().sorted().collect(Collectors.toList())) {
-            List<Transaction> transactionsForMonth = monthListMap.get(month);
-            Map<Integer, List<Transaction>> collect = transactionsForMonth.stream().collect(Collectors.groupingBy(transaction -> transaction.getDate().getDayOfMonth()));
+        for (MonthEntry month : monthEntryTransactionsMap.keySet().stream().sorted().collect(Collectors.toList())) {
+            List<Transaction> transactionsForMonth = monthEntryTransactionsMap.get(month);
+            Map<Integer, List<Transaction>> monthTransactionMap =
+                    transactionsForMonth.stream()
+                            .collect(Collectors.groupingBy(this::getTransactionDayOfMonth));
             int negativeDays = 0;
-            for (Integer dayOfMonth : collect.keySet()) {
-                int amountSum = collect.get(dayOfMonth).stream()
+            for (Map.Entry<Integer, List<Transaction>> entry : monthTransactionMap.entrySet()) {
+                int amountSum = monthTransactionMap.get(entry.getKey()).stream()
                         .map(Transaction::getAmount)
                         .mapToInt(Integer::intValue)
                         .sum();
@@ -34,6 +36,10 @@ public class BalanceServiceImpl implements BalanceService {
             result.put(month, negativeDays);
         }
         return result;
+    }
+
+    private int getTransactionDayOfMonth(Transaction transaction) {
+        return transaction.getDate().getDayOfMonth();
     }
 
     private Map<MonthEntry, List<Transaction>> getMonthEntryMap(Account account) {
