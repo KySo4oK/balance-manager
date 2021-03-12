@@ -1,12 +1,12 @@
-package org.example;
+package org.example.service;
 
 import org.example.entity.Account;
+import org.example.entity.MonthEntry;
 import org.example.entity.Transaction;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class BalanceServiceTest {
         transactions.add(new Transaction(-102, LocalDate.now()));
         transactions.add(new Transaction(-102, LocalDate.now()));
         Account account = new Account(100, transactions);
-        Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
+        Map<MonthEntry, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
         Assert.assertTrue(negativeDaysInMonths.containsValue(1));
     }
 
@@ -30,8 +30,8 @@ public class BalanceServiceTest {
         transactions.add(new Transaction(-102, LocalDate.now()));
         transactions.add(new Transaction(-102, LocalDate.now().minusYears(1)));
         Account account = new Account(100, transactions);
-        Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
-        Assert.assertTrue(negativeDaysInMonths.keySet().size() == 2);
+        Map<MonthEntry, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
+        Assert.assertEquals(2, negativeDaysInMonths.keySet().size());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class BalanceServiceTest {
         transactions.add(new Transaction(-102, LocalDate.now()));
         transactions.add(new Transaction(-102, LocalDate.now().minusDays(1)));
         Account account = new Account(100, transactions);
-        Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
+        Map<MonthEntry, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
         Assert.assertTrue(negativeDaysInMonths.containsValue(2));
     }
 
@@ -50,7 +50,7 @@ public class BalanceServiceTest {
         transactions.add(new Transaction(102, LocalDate.now()));
         transactions.add(new Transaction(-102, LocalDate.now().minusMonths(1)));
         Account account = new Account(100, transactions);
-        Map<Month, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
+        Map<MonthEntry, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
         Assert.assertTrue(negativeDaysInMonths.containsValue(1));
     }
 }
