@@ -38,3 +38,9 @@ ALTER TABLE "transaction"
     ADD CONSTRAINT "transaction_fk0" FOREIGN KEY ("customer_id") REFERENCES "customer" ("id");
 ALTER TABLE "transaction"
     ADD CONSTRAINT "transaction_fk1" FOREIGN KEY ("bank_id") REFERENCES "bank_account" ("id");
+
+/*
+ Where might be an issue?
+ When we execute transactions we need update balance for customer and bank.
+ It will be performed in 2 operations in one application transaction.
+ */
