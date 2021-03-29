@@ -41,7 +41,7 @@ public class BalanceServiceTest {
         transactions.add(new Transaction(-102, LocalDate.now().minusDays(1)));
         Account account = new Account(100, transactions);
         Map<MonthEntry, Integer> negativeDaysInMonths = testedInstance.getNegativeDaysInMonths(account);
-        Assert.assertTrue(negativeDaysInMonths.containsValue(2));
+        Assert.assertFalse(negativeDaysInMonths.containsValue(2));
     }
 
     @Test
